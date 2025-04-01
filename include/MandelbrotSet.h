@@ -2,7 +2,7 @@
 #include <time.h>
 #include <SFML/Graphics.hpp>
 
-struct FPS_Data
+struct Fps_Data
 {
     int frame_count;        // Счётчик кадров
     clock_t last_time;      // Время последнего обновления FPS
