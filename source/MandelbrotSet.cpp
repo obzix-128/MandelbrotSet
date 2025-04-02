@@ -1,20 +1,86 @@
 #include "MandelbrotSet.h"
 
 
-int main() 
+int main(const int argc, const char** argv) 
+{        
+    const int _MIN_NUMBERS_OF_ARGUMENTS = 2;
+    if(argc < _MIN_NUMBERS_OF_ARGUMENTS) // На случай, если кто-то забыл задать аргументы в командной строке
+    {
+        fprintf(stderr, "Ошибка: не заданы аругменты\n");
+        return -1;
+    }
+
+    const struct Set_Data SET_INFO = 
+    {
+        .WIDTH  = 1000,
+        .HEIGHT = 1000,
+        .DX = 1.f / 1000, 
+        .DY = 1.f / 1000,
+        .DSCALE = 0.1f
+    };
+
+    if(0 == strcmp(argv[1], "standart")) // Стандартный запуск программы, рисуем множество Мандельброта
+    {
+        printMandelbrot(&SET_INFO);   
+    }
+    else if(0 == strcmp(argv[1], "test")) // Запуск программы для снятия измерений
+    {
+        char* endptr = NULL;
+        long num_of_rep = strtol(argv[2], &endptr, 10); // Преобразуем второй аргумент командной строки в число
+        if(argv[2] == endptr)                           // Если преобразования не произошло, выводим ошибку
+        {
+            fprintf(stderr, "Ошибка: не обнаружено число повторений\n");
+            return -1;
+        }
+        calculateMandelbrot(&SET_INFO, num_of_rep);
+        return 0;
+    }
+    else
+    {
+        fprintf(stderr, "Ошибка: Неверно заданы аргументы\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+/*------------------------------------------------------------------------------------------------------------------------------------
+Функция, которая проверяет для каждой точки плоскости указанных размеров, принадлежит та множеству Мандельброта или нет
+ARGUMENTS: const struct Set_Data SET_INFO - информация о размере плоскости, размере единичных шагов
+           long num_of_rep - количество дополнительных пересчётов, для увеличения нагрузки
+------------------------------------------------------------------------------------------------------------------------------------*/
+void calculateMandelbrot(const struct Set_Data* SET_INFO, long num_of_rep)
 {
-    const int WIDTH  = 800; // Задали ширину экрана
-    const int HEIGHT = 800; // Задали высоту экрана
+    while(true)
+    {
+        for(long i = 0; i < num_of_rep; ++i) // Задаём число дополнительных пересчётов (для дополнительной нагрузки)
+        {
+            for (int y = 0; y < SET_INFO->HEIGHT; ++y) // Начинаем перебор строк из пикселей
+            {
+                float actual_x = (float)(    -SET_INFO->WIDTH / 2); 
+                // Актуальная координата пикселя в начале строки
+                float actual_y = (float)(y - SET_INFO->HEIGHT / 2); 
+                // Актуальная координата отображаемой строки
 
-    const float dx = (1 / (float)WIDTH ); // Единичный шаг по оси x
-    const float dy = (1 / (float)HEIGHT); // Единичный шаг по оси y
+                for (int x = 0; x < SET_INFO->WIDTH; ++x) // Перебираем пиксели в строке
+                {
+                    calculateMandelbrotPixel(actual_x, actual_y); // Вычисляем цвет для пикселя 
+                    actual_x += SET_INFO->DX;                     // Переходим на следующий пиксель
+                }
+            }
+        }
+        int fps = fps_counter();
+        fprintf(stdout, "fps = %d\n", fps);
+    }
+}
 
-    float offset_x = 0; // Смещение по оси x
-    float offset_y = 0; // Смещение по оси y 
-
-    const float dscale = (float)0.1; // Единичный шаг увеличения
-    float scale = 1;                 // Увеличение
-
+/*------------------------------------------------------------------------------------------------------------------------------------
+Функция, которая рисует в окне множество Мандельброта, с возможностью перемещения и увелечения картинки. Каждому пикселю соответствует
+точка комплексной плоскости, для которой выполняется проверка на принадлежность множеству Мандельброта
+ARGUMENTS: const struct Set_Data SET_INFO - информация о размере отображаемой плоскости, размере единичных шагов
+------------------------------------------------------------------------------------------------------------------------------------*/
+int printMandelbrot(const struct Set_Data* SET_INFO)
+{
     sf::Font font; // Создаем шрифт
     if (!font.openFromFile("georgia.ttf")) 
     {
@@ -26,8 +92,13 @@ int main()
     text.setCharacterSize(15);           // Задаём размер текста
     text.setFillColor(sf::Color::White); // Задаём цвет
 
-    sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "Mandelbrot Set"); // Создали окно
-    sf::VertexArray pixels(sf::PrimitiveType::Points, WIDTH * HEIGHT);         // Создаем массив пикселей
+    sf::RenderWindow window(sf::VideoMode({(unsigned)SET_INFO->WIDTH, (unsigned)SET_INFO->HEIGHT}), "Mandelbrot Set"); // Создали окно
+    
+    sf::VertexArray pixels(sf::PrimitiveType::Points, SET_INFO->WIDTH * SET_INFO->HEIGHT); // Создаем массив пикселей
+
+    float scale = 1;    // Увеличение
+    float offset_x = 0; // Смещение по оси x
+    float offset_y = 0; // Смещение по оси y 
 
     while(window.isOpen()) // Пока окно открыто цикл повторяется
     {
@@ -46,42 +117,44 @@ int main()
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Z)) // Приблизить
         {
-            scale -= dscale;
+            scale -= SET_INFO->DSCALE;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::X)) // Отдалить
         {
-            scale += dscale;
+            scale += SET_INFO->DSCALE;
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::A)) // Влево
         {
-            offset_x -= dx;
+            offset_x -= SET_INFO->DX * 50;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::D)) // Вправо
         {
-            offset_x += dx;
+            offset_x += SET_INFO->DX * 50;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W)) // Вверх
         {
-            offset_y -= dy;
+            offset_y -= SET_INFO->DY * 50;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S)) // Вниз
         {
-            offset_y += dy;
+            offset_y += SET_INFO->DY * 50;
         }
 
-        for (int y = 0; y < HEIGHT; ++y)    // Начинаем перебор строк из пикселей
+        for (int y = 0; y < SET_INFO->HEIGHT; ++y) // Начинаем перебор строк из пикселей
         {
-            float actual_x = (((float)(    -WIDTH / 2) * dx) + offset_x) * scale; // Актуальная координата пикселя в начале строки
-            float actual_y = (((float)(y - HEIGHT / 2) * dy) + offset_y) * scale; // Актуальная координата отображаемой строки
+            float actual_x = (((float)(    -SET_INFO->WIDTH / 2) * SET_INFO->DX) + offset_x) * scale; 
+            // Актуальная координата пикселя в начале строки
+            float actual_y = (((float)(y - SET_INFO->HEIGHT / 2) * SET_INFO->DY) + offset_y) * scale; 
+            // Актуальная координата отображаемой строки
 
-            for (int x = 0; x < WIDTH; ++x) // Перебираем пиксели в строке
+            for (int x = 0; x < SET_INFO->WIDTH; ++x) // Перебираем пиксели в строке
             {
                 sf::Color color = calculateMandelbrotPixel(actual_x, actual_y); // Вычисляем цвет для пикселя 
-                actual_x += dx * scale;                                         // Переходим на следующий пиксель
+                actual_x += SET_INFO->DX * scale;                               // Переходим на следующий пиксель
 
-                pixels[y * WIDTH + x].position = sf::Vector2f((float)x, (float)y); // Устанавливаем позицию и цвет
-                pixels[y * WIDTH + x].color    = color;
+                pixels[y * SET_INFO->WIDTH + x].position = sf::Vector2f((float)x, (float)y); // Устанавливаем позицию и цвет
+                pixels[y * SET_INFO->WIDTH + x].color    = color;
             }
         }
 
@@ -145,7 +218,7 @@ int fps_counter()
     {
         .frame_count = 0,
         .last_time = 0,
-        .update_interval = 0.25, // Обновлять FPS каждые 0.5 секунды
+        .update_interval = 0.25, // Обновлять FPS каждые 0.25 секунды
         .fps = 0
     };
 
@@ -154,7 +227,7 @@ int fps_counter()
 
     fps_data.frame_count++;
 
-    if (elapsed >= fps_data.update_interval) // Если прошло больше 0.5 секунды — пересчитываем FPS
+    if (elapsed >= fps_data.update_interval) // Если прошло больше 0.25 секунды — пересчитываем FPS
     {
         fps_data.fps = (int)(fps_data.frame_count / elapsed);
         fps_data.frame_count = 0;

@@ -15,7 +15,7 @@ LDFLAGS := -lsfml-graphics -lsfml-window -lsfml-system
 all: do
 
 do: $(objects)
-	@$(CC) $^ $(FLAGS) $(LDFLAGS) -o $@  # Добавлен $(LDFLAGS)
+	@$(CC) $^ $(FLAGS) $(LDFLAGS) -o $@
 
 objects/%.o: source/%.cpp
 	@mkdir -p objects
