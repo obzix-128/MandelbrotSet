@@ -1,17 +1,24 @@
+#ifndef MANDELBROTSET_H
+#define MANDELBROTSET_H
+
 #include <stdio.h>
-#include <time.h>
 #include <string.h>
 #include <SFML/Graphics.hpp>
 
-struct Fps_Data
+enum ErrorNumbers
 {
-    int frame_count;        // Счётчик кадров
-    clock_t last_time;      // Время последнего обновления FPS
-    double update_interval; // Интервал обновления (в секундах)
-    int fps;                // Текущее значение FPS
+    NO_ERROR            = 0,
+    LOADING_FONT_ERROR  = 1,
+    NULL_ADDRESS_ERROR  = 2,
+    MODE_ERROR          = 3
 };
 
-struct Set_Data
+#define CHECK_NULL_ADDR_ERROR(variable, ERROR_NUMBER) if(variable == NULL)     \
+                                                      {                        \
+                                                          return ERROR_NUMBER; \
+                                                      }
+
+struct __attribute__((aligned(32))) Set_Data
 {
     int WIDTH;    // Размеры комплексной плоскости, для которой выполняем подсчёт
     int HEIGHT;
@@ -20,7 +27,4 @@ struct Set_Data
     float DSCALE; // Единичный шаг увеличиния картинки
 };
 
-void calculateMandelbrot(const struct Set_Data* SET_INFO, long num_of_rep);
-int  printMandelbrot    (const struct Set_Data* SET_INFO                 );
-sf::Color calculateMandelbrotPixel(float actual_x, float actual_y);
-int fps_counter(void);
+#endif // MANDELBROTSET_H
