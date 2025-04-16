@@ -21,6 +21,13 @@ int main(void)
         .DSCALE = 1.5f   // Множитель увеличения
     };
 
+    const struct Const_For_Colors COLORS_INFO = // Константы, от которых зависит раскраска множества Мандельброта
+    {
+        .RED   = 2000,
+        .GREEN = 707,
+        .BLUE  = 2017
+    };
+
     sf::Font font; // Создаем шрифт
     if (!font.openFromFile("georgia.ttf")) 
     {
@@ -48,15 +55,15 @@ int main(void)
 
         if(mode == NATIVE) // Режим без ручных оптимизаций
         {
-            CHECK_ERROR(getPixelColorsNative(pixels, &SET_INFO, scale, offset_x, offset_y));
+            CHECK_ERROR(getPixelColorsNative(pixels, &SET_INFO, &COLORS_INFO, scale, offset_x, offset_y));
         }
         else if(mode == FOR_OPT) // Режим с оптимизацией с помощью циклов
         {
-            CHECK_ERROR(getPixelColorsForOpt(pixels, &SET_INFO, scale, offset_x, offset_y));
+            CHECK_ERROR(getPixelColorsForOpt(pixels, &SET_INFO, &COLORS_INFO, scale, offset_x, offset_y));
         }
         else if(mode == INTRINSIC_OPT) // Режим с оптимизацией с помощью intrinsic-ов
         {
-            CHECK_ERROR(getPixelColorsIntrinsicOpt(pixels, &SET_INFO, scale, offset_x, offset_y));
+            CHECK_ERROR(getPixelColorsIntrinsicOpt(pixels, &SET_INFO, &COLORS_INFO, scale, offset_x, offset_y));
         }
         else // Ловим ошибку
         {

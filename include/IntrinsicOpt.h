@@ -4,8 +4,8 @@
 #include "MandelbrotSet.h"
 #include <immintrin.h>
 
-ErrorNumbers getPixelColorsIntrinsicOpt(sf::VertexArray& pixels, const struct Set_Data* SET_INFO, float scale, float offset_x, 
-                                                                                                               float offset_y );
+ErrorNumbers getPixelColorsIntrinsicOpt(sf::VertexArray& pixels, const struct Set_Data* SET_INFO, 
+                                        const struct Const_For_Colors* COLORS_INFO, float scale, float offset_x, float offset_y);
 __m256i calculateMandelbrotPixelIntrinsicOpt(__m256 x_coord, __m256 y_coord);
 
 #endif // INTRINSICOPT_H

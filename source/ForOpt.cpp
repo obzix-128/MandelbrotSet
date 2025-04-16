@@ -9,8 +9,8 @@ ARGUMENTS: sf::VertexArray& pixels - массив для заполнения ц
            float offset_x - смещение по оси x
            float offset_y - смещение по оси y
 ------------------------------------------------------------------------------------------------------------------------------------*/
-ErrorNumbers getPixelColorsForOpt(sf::VertexArray& pixels, const struct Set_Data* SET_INFO, float scale, float offset_x, 
-                                                                                                         float offset_y ) 
+ErrorNumbers getPixelColorsForOpt(sf::VertexArray& pixels, const struct Set_Data* SET_INFO, 
+                                  const struct Const_For_Colors* COLORS_INFO, float scale, float offset_x, float offset_y)
 {
     CHECK_NULL_ADDR_ERROR(SET_INFO, NULL_ADDRESS_ERROR);
 
@@ -38,9 +38,9 @@ ErrorNumbers getPixelColorsForOpt(sf::VertexArray& pixels, const struct Set_Data
                 pixels[y * SET_INFO->WIDTH + x + i].position = sf::Vector2f((float)(x + i), (float)y);
                 pixels[y * SET_INFO->WIDTH + x + i].color = sf::Color
                 (
-                    (uint8_t)(counter_values[i] * 228) % 256,
-                    (uint8_t)(counter_values[i] * 1488) % 256,
-                    (uint8_t)(counter_values[i] * 1337) % 256
+                    (uint8_t)(counter_values[i] * COLORS_INFO->RED)   % 256,
+                    (uint8_t)(counter_values[i] * COLORS_INFO->GREEN) % 256,
+                    (uint8_t)(counter_values[i] * COLORS_INFO->BLUE)  % 256
                 );  
             }
 

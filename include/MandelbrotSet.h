@@ -27,4 +27,11 @@ struct __attribute__((aligned(32))) Set_Data
     float DSCALE; // Единичный шаг увеличиния картинки
 };
 
+struct Const_For_Colors
+{
+    int RED;
+    int GREEN;
+    int BLUE;
+};
+
 #endif // MANDELBROTSET_H
