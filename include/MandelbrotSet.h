@@ -10,7 +10,8 @@ enum ErrorNumbers
     NO_ERROR            = 0,
     LOADING_FONT_ERROR  = 1,
     NULL_ADDRESS_ERROR  = 2,
-    MODE_ERROR          = 3
+    MODE_ERROR          = 3,
+    WINDOW_SIZE_ERROR   = 4
 };
 
 #define CHECK_NULL_ADDR_ERROR(variable, ERROR_NUMBER) if(variable == NULL)     \

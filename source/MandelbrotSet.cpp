@@ -12,14 +12,26 @@
 ------------------------------------------------------------------------------------------------------------------------------------*/
 int main(void) 
 {        
-    const struct Set_Data SET_INFO = // Информация для отображения картинки. Отмечу, что DX должен быть равен 1 / WIDTH, DY аналогично
+    #define WIDTH_D  800
+    #define HEIGHT_D 800
+
+    const struct Set_Data SET_INFO = // Информация для отображения картинки.
     {
-        .WIDTH  = 800,   // Ширина окна
-        .HEIGHT = 800,   // Высота окна
-        .DX = 1.f / 800, // Единичный шаг между пикселями по горизонтали
-        .DY = 1.f / 800, // Единичный шаг между пикселями по вертикали
-        .DSCALE = 1.5f   // Множитель увеличения
+        .WIDTH  = WIDTH_D,    // Ширина окна
+        .HEIGHT = HEIGHT_D,   // Высота окна
+        .DX = 1.f / WIDTH_D,  // Единичный шаг между пикселями по горизонтали
+        .DY = 1.f / HEIGHT_D, // Единичный шаг между пикселями по вертикали
+        .DSCALE = 1.5f        // Множитель увеличения
     };
+
+    if((WIDTH_D * HEIGHT_D) % 8 != 0)
+    {
+        errorHandler(LOADING_FONT_ERROR, __PRETTY_FUNCTION__);
+        return LOADING_FONT_ERROR;
+    }
+
+    #undef WIDTH_D
+    #undef HEIGHT_D
 
     const struct Const_For_Colors COLORS_INFO = // Константы, от которых зависит раскраска множества Мандельброта
     {

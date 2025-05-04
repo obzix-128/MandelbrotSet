@@ -40,7 +40,7 @@ ErrorNumbers getPixelColorsIntrinsicOpt(sf::VertexArray& pixels, const struct Se
             __m256i counters = calculateMandelbrotPixelIntrinsicOpt(x_coord, y_coord); // Вычисляем 8 пикселей одновременно
             x_coord = _mm256_add_ps(x_coord, dx);                                      // Переходим к следующему блоку из 8 пикселей
 
-            alignas(32) int counter_values[FLOATS_IN_MM256];
+            alignas(32) int counter_values[FLOATS_IN_MM256] = {};
             // Переводим значение 256-битного регистра в массив из 8 int-ов
             _mm256_store_si256((__m256i*)counter_values, counters); 
 

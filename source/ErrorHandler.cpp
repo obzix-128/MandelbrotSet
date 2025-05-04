@@ -32,6 +32,11 @@ ErrorNumbers errorHandler(ErrorNumbers error, const char* func_name)
             fprintf(stderr, "Error: Non-existent program mode selected\n");
             break;
         }
+        case WINDOW_SIZE_ERROR:
+        {
+            fprintf(stderr, "Error: Window dimensions must be a multiple of 8\n");
+            break;
+        }
         default:
         {
             fprintf(stderr, "Unknown error\n");
