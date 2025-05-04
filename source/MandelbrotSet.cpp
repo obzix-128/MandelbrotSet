@@ -26,8 +26,8 @@ int main(void)
 
     if((WIDTH_D * HEIGHT_D) % 8 != 0)
     {
-        errorHandler(LOADING_FONT_ERROR, __PRETTY_FUNCTION__);
-        return LOADING_FONT_ERROR;
+        errorHandler(WINDOW_SIZE_ERROR, __PRETTY_FUNCTION__);
+        return WINDOW_SIZE_ERROR;
     }
 
     #undef WIDTH_D
